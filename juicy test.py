@@ -298,6 +298,8 @@ class Bird:
 
 class CMenu:
     image = None
+    global selectMenu
+
 
     def __init__(self):
         self.x,self.y = 400,300
@@ -310,6 +312,13 @@ class CMenu:
 
     def draw(self):
        self.image.draw(self.x, self.y,800,600)
+
+    def menuset(self):
+        global menu
+        global selectMenu
+
+        if selectMenu == True:
+            menu = True
 
 
 def handle_events():
@@ -350,6 +359,7 @@ def break_check1(player,fruit ):
     global break_status1
     if player.x >= fruit.x -50 and player.x <= fruit.x +50 and player.y >= fruit.y -50 and player.y <= fruit.y +50:
         break_status1 = True
+
 
 def main():
 

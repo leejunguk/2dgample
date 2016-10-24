@@ -320,6 +320,18 @@ class CMenu:
         if selectMenu == True:
             menu = True
 
+class KPU:
+
+    image = None
+
+    def __init__(self):
+        self.x,self.y = 400, 300
+
+        if KPU.image == None:
+            KPU.image = load_image('kpu_credit.png')
+
+    def draw(self):
+         self.image.draw(self.x, self.y)
 
 def handle_events():
     global running
@@ -365,6 +377,7 @@ def main():
 
     open_canvas()
 
+
     mainMenu = CMenu()
     player = Player()
     tree = Tree()
@@ -379,7 +392,13 @@ def main():
     cloud = Cloud()
     bucket = Bucket()
     pear = Fruits()
+    kpu = KPU()
     direction = Direction()
+
+    clear_canvas()
+    kpu.draw()
+    update_canvas()
+    delay(2.0)
 
     global menu
     global running

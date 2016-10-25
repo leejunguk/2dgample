@@ -198,6 +198,7 @@ class  Fruits:
        self.image.draw(self.x, self.y,50,50)
        if break_status1 == True :
            Fruits.image = load_image('pear-change.png')
+           self.y -= 5
            self.update()
            break_status1 = False
            return

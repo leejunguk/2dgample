@@ -11,7 +11,7 @@ break_check = None
 
 # state
 
-LEFT, UP, RIGHT, DOWN, NORMAL,JUMP,SURF = 4, 8, 6, 2, 0,7,10
+LEFT, UP, RIGHT, DOWN, NORMAL,JUMP,SURF,DOWNRIGHT = 4, 8, 6, 2, 0,7,10,8
 
 KeyDown = None
 break_status = None
@@ -48,7 +48,7 @@ class Player:
     image = None
 
 
-    LEFT,UP,RIGHT,DOWN,NORMAL,JUMP = 4, 8, 6, 2, 0, 7
+    LEFT,UP,RIGHT,DOWN,NORMAL,JUMP,DOWNRIGHT = 4, 8, 6, 2, 0, 7, 8
 
     def handle_left_run(self):
         self.x -= 10
@@ -76,6 +76,12 @@ class Player:
 
         if self.y < 50:
             pass  # dead
+
+    def handle_downright(self):
+        self.y -= 10
+        self.x += 10
+        self.run_frames += 1
+        self.state_update()
 
     def handle_normal(self):
         self.run_frames += 1
@@ -106,7 +112,8 @@ class Player:
                 UP: handle_up_run,
                 NORMAL: handle_normal,
                 JUMP: handle_jump,
-                SURF: handle_surf
+                SURF: handle_surf,
+                DOWNRIGHT :handle_downright
     }
 
     def update(self):
@@ -157,6 +164,8 @@ class Player:
             self.state = UP
         elif KeyDown == DOWN:
             self.state = DOWN
+        elif KeyDown == DOWN:
+            self.state = DOWNRIGHT
         elif space == True:
             self.state = SURF
             return
@@ -359,6 +368,8 @@ def handle_events():
             KeyDown = UP
         elif event.type == SDL_KEYDOWN and event.key == SDLK_DOWN:
             KeyDown = DOWN
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_DOWN and SDLK_RIGHT:
+            KeyDown = DOWNRIGHT
 
 
 def break_check(player,ball ):

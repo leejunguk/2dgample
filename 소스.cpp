@@ -1,666 +1,197 @@
-#include <iostream>
-#include <chrono>
-#include <thread>
-#include <mutex>
-#include <atomic>
-using namespace std;
-using namespace std::chrono;
-mutex mylock;
+#include <gl/glut.h> // 헤더 파일
+// 필요한 전역 변수 선언
+int KEY = 0;
+
+const int KeyX = 1;
+const int KeyY = 2;
+const int KeyZ = 3;
+const int KeyLeft = 4;
+const int KeyRight = 5;
 
 
-const int SIZE = 100000000;
-int sum = 0;
-int core = 0;
-bool flag[2] = {false, false};
-int turn = 0;
-
-atomic<int> atom_sum = 0;
-atomic_flag p = { 0 };
-
-
-
-void func_tas(void)
+void Keyboard(unsigned char key, int x, int y);
+void TimerFunction(int value);
+void Reshape(int w, int h);
+void DrawScene();
+void SetupRC();
+void main()
 {
-	for (int i = 0; i < SIZE / core; ++i)
-	{
-		while (atomic_flag_test_and_set(&p));
-		sum += 1;
-		atomic_flag_clear(&p);
-	}
+	// 윈도우 초기화 및 생성
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(800	, 600);
+	glutCreateWindow("Points Drawing");
+	// 상태 변수 초기화 함수
+	SetupRC();
+	glutDisplayFunc(DrawScene); // 출력 콜백 함수
+	glutReshapeFunc(Reshape); // 다시 그리기 콜백 함수
+	glutKeyboardFunc(Keyboard); // 키보드 입력 콜백 함수
+	glutTimerFunc(100, TimerFunction, 1); // 타이머 콜백 함수
+	glutMainLoop(); // 이벤트 루프 실행하기
+}
+void SetupRC() {
+	// 필요한 변수들, 좌표값 등의 초기화
+	// 기능 설정 초기화
 }
 
-void func_mutex(void)
+// 렌더링을 위한 디스플레이 콜백 함수: 모든 그리기 명령은 이 함수에서 대부분 처리 함
+void DrawScene()
 {
-	for (int i = 0; i < SIZE / core; ++i)
-	{
-		mylock.lock();
-		sum += 1;
-		mylock.unlock();
-	}
-}
-void func_atom(void)
-{
-	for (int i = 0; i < SIZE / core; ++i)
-	{
-		atom_sum += 1;
-	}
-}
-void sum_thread()
-{
-	for (int i = 0; i < SIZE / core; ++i)
-	{
-		sum += 1;
-	}
-}
-
-void sum_core2(int num_core)
-{   
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ sum_thread };
-	thread t2{ sum_thread };
-	t1.join();
-	t2.join();
-
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = "<< num_core <<", SUM = " << sum << endl;
-}
-void sum_core1(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ sum_thread };
-
-	t1.join();
-
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-
-void sum_core4(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ sum_thread };
-	thread t2{ sum_thread };
-	thread t3{ sum_thread };
-	thread t4{ sum_thread };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-
-void sum_core8(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ sum_thread };
-	thread t2{ sum_thread };
-	thread t3{ sum_thread };
-	thread t4{ sum_thread };
-	thread t5{ sum_thread };
-	thread t6{ sum_thread };
-	thread t7{ sum_thread };
-	thread t8{ sum_thread };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	t5.join();
-	t6.join();
-	t7.join();
-	t8.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-
-
-void sum_core16(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ sum_thread };
-	thread t2{ sum_thread };
-	thread t3{ sum_thread };
-	thread t4{ sum_thread };
-	thread t5{ sum_thread };
-	thread t6{ sum_thread };
-	thread t7{ sum_thread };
-	thread t8{ sum_thread };
-	thread t9{ sum_thread };
-	thread t10{ sum_thread };
-	thread t11{ sum_thread };
-	thread t12{ sum_thread };
-	thread t13{ sum_thread };
-	thread t14{ sum_thread };
-	thread t15{ sum_thread };
-	thread t16{ sum_thread };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	t5.join();
-	t6.join();
-	t7.join();
-	t8.join();
-	t9.join();
-	t10.join();
-	t11.join();
-	t12.join();
-	t13.join();
-	t14.join();
-	t15.join();
-	t16.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-
-void mutex_core1(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_mutex };
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // 윈도우, 깊이 버퍼 클리어 하기
 	
-	t1.join();
+	glLoadIdentity();
+
+	//gluPerspective(45,1, 1.0, 400.0);// 필요한 변환 적용
+	
+	static float ratio = 0;
+	static float view = 0;
+	if (KEY == KeyX)
+	{
+		glPushMatrix();
+		glRotatef(view++, 1, 0, 0);
+	}
+	else if (KEY == KeyY)
+	{
+		glPushMatrix();
+		glRotatef(view++, 0, 1, 0);
+
+	}
+	else if (KEY == KeyZ)
+	{
+		glPushMatrix();
+		glRotatef(view++, 0, 0, 1);
+
+	}
+	glPushMatrix();
+		glColor3f(1.0f, 0.0f, 1.0f);
+		glScalef(0.2, 2, 0.2);
+		glutSolidCube(5);
+	glPopMatrix();
+	
+	glPushMatrix();
+		glColor3f(0.0f, 1.0f, 1.0f);
+		glScalef(2, 0.2, 0.2);
+		glutSolidCube(5);
+	glPopMatrix();
+
+	glPushMatrix();
+		glColor3f(1.0f, 1.0f, 0.0f);
+		glScalef(0.2, 0.2, 2);
+		glutSolidCube(5);
+	glPopMatrix();
+
+	//땅
+	glPushMatrix();
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glTranslatef(0, -100, 50);
+	glScalef(50, 0.2, 30);
+	glutSolidCube(5);
+	glPopMatrix();
 	
 
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-
-void mutex_core2(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_mutex };
-	thread t2{ func_mutex };
-	t1.join();
-	t2.join();
-
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-
-void mutex_core4(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_mutex };
-	thread t2{ func_mutex };
-	thread t3{ func_mutex };
-	thread t4{ func_mutex };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-
-void mutex_core8(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_mutex };
-	thread t2{ func_mutex };
-	thread t3{ func_mutex };
-	thread t4{ func_mutex };
-	thread t5{ func_mutex };
-	thread t6{ func_mutex };
-	thread t7{ func_mutex };
-	thread t8{ func_mutex };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	t5.join();
-	t6.join();
-	t7.join();
-	t8.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-
-void mutex_core16(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_mutex };
-	thread t2{ func_mutex };
-	thread t3{ func_mutex };
-	thread t4{ func_mutex };
-	thread t5{ func_mutex };
-	thread t6{ func_mutex };
-	thread t7{ func_mutex };
-	thread t8{ func_mutex };
-	thread t9{ func_mutex };
-	thread t10{ func_mutex };
-	thread t11{ func_mutex };
-	thread t12{ func_mutex };
-	thread t13{ func_mutex };
-	thread t14{ func_mutex };
-	thread t15{ func_mutex };
-	thread t16{ func_mutex };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	t5.join();
-	t6.join();
-	t7.join();
-	t8.join();
-	t9.join();
-	t10.join();
-	t11.join();
-	t12.join();
-	t13.join();
-	t14.join();
-	t15.join();
-	t16.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-void atom_core1(int num_core)
-{
-	atom_sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_atom };
-
-	t1.join();
-
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << atom_sum << endl;
-}
-void atom_core2(int num_core)
-{
-	atom_sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_atom };
-	thread t2{ func_atom };
-	t1.join();
-	t2.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << atom_sum << endl;
-}
-void atom_core4(int num_core)
-{
-	atom_sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_atom };
-	thread t2{ func_atom };
-	thread t3{ func_atom };
-	thread t4{ func_atom };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << atom_sum << endl;
-}
-void atom_core8(int num_core)
-{
-	atom_sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_atom };
-	thread t2{ func_atom };
-	thread t3{ func_atom };
-	thread t4{ func_atom };
-	thread t5{ func_atom };
-	thread t6{ func_atom };
-	thread t7{ func_atom };
-	thread t8{ func_atom };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	t5.join();
-	t6.join();
-	t7.join();
-	t8.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << atom_sum << endl;
-}
-void atom_core16(int num_core)
-{
-	atom_sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_atom };
-	thread t2{ func_atom };
-	thread t3{ func_atom };
-	thread t4{ func_atom };
-	thread t5{ func_atom };
-	thread t6{ func_atom };
-	thread t7{ func_atom };
-	thread t8{ func_atom };
-	thread t9{ func_atom };
-	thread t10{ func_atom };
-	thread t11{ func_atom };
-	thread t12{ func_atom };
-	thread t13{ func_atom };
-	thread t14{ func_atom };
-	thread t15{ func_atom };
-	thread t16{ func_atom };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	t5.join();
-	t6.join();
-	t7.join();
-	t8.join();
-	t9.join();
-	t10.join();
-	t11.join();
-	t12.join();
-	t13.join();
-	t14.join();
-	t15.join();
-	t16.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << atom_sum << endl;
-}
-void tas_core1(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_tas };
-
-	t1.join();
-
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-void tas_core2(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_tas };
-	thread t2{ func_tas };
-	t1.join();
-	t2.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-void tas_core4(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_tas };
-	thread t2{ func_tas };
-	thread t3{ func_tas };
-	thread t4{ func_tas };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-void tas_core8(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_tas };
-	thread t2{ func_tas };
-	thread t3{ func_tas };
-	thread t4{ func_tas };
-	thread t5{ func_tas };
-	thread t6{ func_tas };
-	thread t7{ func_tas };
-	thread t8{ func_tas };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	t5.join();
-	t6.join();
-	t7.join();
-	t8.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-void tas_core16(int num_core)
-{
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-
-	core = num_core;
-	thread t1{ func_tas };
-	thread t2{ func_tas };
-	thread t3{ func_tas };
-	thread t4{ func_tas };
-	thread t5{ func_tas };
-	thread t6{ func_tas };
-	thread t7{ func_tas };
-	thread t8{ func_tas };
-	thread t9{ func_tas };
-	thread t10{ func_tas };
-	thread t11{ func_tas };
-	thread t12{ func_tas };
-	thread t13{ func_tas };
-	thread t14{ func_tas };
-	thread t15{ func_tas };
-	thread t16{ func_tas };
-	t1.join();
-	t2.join();
-	t3.join();
-	t4.join();
-	t5.join();
-	t6.join();
-	t7.join();
-	t8.join();
-	t9.join();
-	t10.join();
-	t11.join();
-	t12.join();
-	t13.join();
-	t14.join();
-	t15.join();
-	t16.join();
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << num_core << ", SUM = " << sum << endl;
-}
-
-void decker1(void)
-{
 	
-	for (int i = 0; i < SIZE / 2; ++i)
-	{
-		flag[0] = true;
-		while (flag[1] == true) 
+	// 좌표계 끝
+
+	//  왼쪽 도형
+	glPushMatrix();
+		
+		glColor3f(1.0f, 0.8f, 0.9f);
+		glTranslatef(-50,-100,0);
+		if (KEY == KeyLeft)
 		{
-			if(turn == 1)
-			{
-				flag[0] = false;
-				
-				while (turn == 1)
-				{
-				}flag[0] = true;
-
-			}
+			glRotatef(ratio++, 0, 1, 0);
 		}
-		++sum;
+		glutSolidCube(20);
+		
 
-		turn = 1;
-		flag[0] = false;
-	}
+	glPopMatrix();
 
-}
-
-void decker2(void)
-{
-
-	for (int i = 0; i < SIZE / 2; ++i)
-	{
-		flag[1] = true;
-		while (flag[0] == true)
+	glPushMatrix();
+		glColor3f(0.8f, 1.0f, 0.8f);
+		glTranslatef(-50, -100, 0);
+		if (KEY == KeyLeft)
 		{
-			if (turn == 0)
-			{
-				flag[1] = false;
-
-				while (turn == 0)
-				{
-
-				}
-				flag[1] = true;
-
-			}
+			glRotatef(ratio++, 0, 1, 0);
 		}
-		++sum;
+		glutWireCube(20);
+	glPopMatrix();
 
-		turn = 0;
-		flag[1] = false;
+	//
+
+	//오른쪽
+	glPushMatrix();
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glTranslatef(+50, -100, +30);
+	if (KEY == KeyRight)
+	{
+		glRotatef(ratio++,1,0,0);
+	}
+		glutWireSphere(20,20,20);
+	glPopMatrix();
+
+	
+
+	if (KEY == KeyX)
+	{
+	
+		glPopMatrix();
+	}													//--- 변환을 적용하기 위해서
+	else if (KEY == KeyY)													// glPushMatrix 함수를 호출하여 기존의 좌표 시스템을 저장
+	{													// 필요한 경우 행렬 초기화 ( glLoadIdentity ( ); )
+		glPopMatrix();											// 변환 적용: 이동, 회전, 신축 등 모델에 적용 할 변환 함수를 호출한다.
+	}
+	
+	else if (KEY == KeyZ)							// 변환이 끝난 후에는 원래의 좌표시스템을 다시 저장하기 위하여 glPopMatrix 함수 호출
+	{
+		glPopMatrix();								// 결과 출력
 	}
 
-}
 
-void deckerstart(void)
-{
-	sum = 0;
-	core = 2;
-	auto start_t = high_resolution_clock::now();
-	thread t1{ decker1 };
-	thread t2{ decker2 };
-	t1.join();
-	t2.join();
-
-
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = " << core << ", SUM = " << sum << endl;
-}
-
-int main()
-{
-	cout << "샘플프로그램" << endl;
+	glutSwapBuffers();
 	
-	sum = 0;
-	auto start_t = high_resolution_clock::now();
-	for (int i = 0; i < 100000000; i++) sum = sum + 1;
-	auto du = high_resolution_clock::now() - start_t;
-	cout << "Computing time is " << duration_cast<milliseconds>(du).count() << "ms, ";
-	cout << "Number of Thread = 1, SUM = " << sum << endl;
-	
-	cout << endl;
-	cout << endl;
-	cout << "조건2: 1,2,4,8,16개 스레드 나누기" << endl;
-	sum_core1(1);
-	sum_core2(2);
-	sum_core4(4);
-	sum_core8(8);
-	sum_core16(16);
-	cout << endl;
-	cout << endl;
-	cout << "조건3:데커알고리즘" << endl;
-	deckerstart();
-
-	cout << endl;
-	cout << endl;
-	cout << "조건4:mutex 실행" << endl;
-	mutex_core1(1);
-	mutex_core2(2);
-	mutex_core4(4);
-	mutex_core8(8);
-	mutex_core16(16);
-
-	cout << endl;
-	cout << endl;
-	cout << "조건5:atom 실행" << endl;
-	atom_core1(1);
-	atom_core2(2);
-	atom_core4(4);
-	atom_core8(8);
-	atom_core16(16);
-
-	cout << endl;
-	cout << endl;
-	cout << "조건6:tas 실행" << endl;
-	tas_core1(1);
-	tas_core2(2);
-	tas_core4(4);
-	tas_core8(8);
-	tas_core16(16);
 }
-
-
+void Reshape(int w, int h)
+{
+	// 뷰포트 변환 설정: 출력 화면 결정
+	glViewport(0, 0, w, h);
+	// 클리핑 변환 설정: 출력하고자 하는 공간 결정
+	// 아래 3줄은 투영을 설정하는 함수
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	// 원근 투영을 사용하는 경우:
+	gluPerspective(60.0, 1.0, 1.0, 1000.0);
+	glTranslatef(0.0, 0.0, -300.0);
+	 // glOrtho (0.0, 800.0, 0.0, 600.0, -1.0, 1.0);
+	// 모델링 변환 설정: 디스플레이 콜백 함수에서 모델 변환 적용하기 위하여 Matrix mode 저장
+	glMatrixMode(GL_MODELVIEW);
+	// 관측 변환: 카메라의 위치 설정 (필요한 경우, 다른 곳에 설정 가능)
+	gluLookAt(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
+}
+void Keyboard(unsigned char key, int x, int y)
+{
+	if (key == 'x' || key == 'X')
+	{
+		KEY = KeyX;
+	}
+	if (key == 'y' || key == 'Y')
+	{
+		KEY = KeyY;
+	}
+	if (key == 'z' || key == 'Z')
+	{
+		KEY = KeyZ;
+	}
+	if (key == 'l' || key == 'L')
+	{
+		KEY = KeyLeft;
+	}
+	if (key == 'r' || key == 'R')
+	{
+		KEY = KeyRight;
+	}
+}
+void TimerFunction(int value)
+{
+	glutPostRedisplay(); // 화면 재출력을 위하여 디스플레이 콜백 함수 호출
+	glutTimerFunc(100, TimerFunction, 1);
+}

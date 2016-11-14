@@ -12,7 +12,7 @@ break_check = None
 # state
 
 LEFT, UP, RIGHT, DOWN, NORMAL,JUMP,SURF,DOWNRIGHT = 4, 8, 6, 2, 0,7,10,8
-
+birdRight = 10
 KeyDown = None
 break_status = None
 break_status1 = None
@@ -32,7 +32,7 @@ class BackGround:
         self.stand_frames = 0
         self.state = 0
         if BackGround.image == None:
-            BackGround.image = load_image('Base Background10.png')
+            BackGround.image = load_image('animated_bg12 copy1.png')
 
     def update(self):
         self.x -= 20
@@ -48,26 +48,25 @@ class Player:
     image = None
 
 
-    LEFT,UP,RIGHT,DOWN,NORMAL,JUMP,DOWNRIGHT = 4, 8, 6, 2, 0, 7, 8
+    LEFT,UP,RIGHT,DOWN,NORMAL,JUMP,DOWNRIGHT = 4, 8, 6, 2, 0, 7, 11
 
     def handle_left_run(self):
         self.x -= 10
         self.run_frames += 1
         self.state_update()
-        if self.x < 0:
-            pass  # state dead
+
 
     def handle_right_run(self):
-        self.x += 10
-        self. run_frames += 1
-        self.state_update()
+        #self.x += 10
+        #self. run_frames += 1
+        #self.state_update()
+        pass
 
     def handle_up_run(self):
         self.y += 10
         self.run_frames += 1
         self.state_update()
-        if  700 < self.y:
-            pass # jump
+
 
     def handle_down_run(self):
         self.y -= 10
@@ -85,7 +84,8 @@ class Player:
 
     def handle_normal(self):
         self.run_frames += 1
-        self.x += 1
+        self.x += 0.1
+        self.y -= 10 * math.sin(self.x)
         self.state_update()
 
         pass # self.run_frame += 1
@@ -282,19 +282,29 @@ class Tree:
 
 class Bird:
     image = None
-    NORMAL, STOP_MOVE = 1, 0
-
+    NORMAL, STOP_MOVE, birdRight = 1, 0, 2
+    State = NORMAL
 
     def __init__(self):
-        self.x, self.y = 800, random.randint(400,500)
+        self.x, self.y = 800, random.randint(500,600)
 
         if Bird.image == None:
             Bird.image = load_image('Bird-2.png')
 
+        self.State = NORMAL
 
     def update(self):
-        self.x -= 12
 
+        if(self.State ==NORMAL):
+            self.x -= 12
+            if(self.x <= 0):
+                self.State = birdRight
+                Bird.image = load_image('Bird-2_vertical.png')
+        if (self.State == birdRight):
+            self.x += 12
+            if (self.x >= 800):
+                self.State = NORMAL
+                Bird.image = load_image('Bird-2.png')
        #self.frame = (self.frame + 1) % 8
 
     def draw(self):

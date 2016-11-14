@@ -164,11 +164,6 @@ class Player:
             self.state = UP
         elif KeyDown == DOWN:
             self.state = DOWN
-        elif KeyDown == DOWN:
-            self.state = DOWNRIGHT
-        elif space == True:
-            self.state = SURF
-            return
         else:
             self.state = NORMAL
         KeyDown = NORMAL
@@ -368,8 +363,7 @@ def handle_events():
             KeyDown = UP
         elif event.type == SDL_KEYDOWN and event.key == SDLK_DOWN:
             KeyDown = DOWN
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_DOWN and SDLK_RIGHT:
-            KeyDown = DOWNRIGHT
+
 
 
 def break_check(player,ball ):

@@ -5,13 +5,15 @@ sys.path.append('../2dgample')
 import random
 from pico2d import *
 
+space = None
 menu = None
 running = None
 break_check = None
+gravity = None
 
 # state
-
-LEFT, UP, RIGHT, DOWN, NORMAL,JUMP,SURF,DOWNRIGHT = 4, 8, 6, 2, 0,7,10,8
+SURF =22
+LEFT, UP, RIGHT, DOWN, NORMAL,JUMP,DOWNRIGHT = 4, 8, 6, 2, 0,7,8
 birdRight = 10
 KeyDown = None
 break_status = None
@@ -44,11 +46,11 @@ class BackGround:
 
 class Player:
     global space
-    space = None
+    global gravity
+
     image = None
 
-
-    LEFT,UP,RIGHT,DOWN,NORMAL,JUMP,DOWNRIGHT = 4, 8, 6, 2, 0, 7, 11
+    SURF, LEFT, UP, RIGHT, DOWN, NORMAL, JUMP,DOWNRIGHT = 22, 4, 8, 6, 2, 0, 7, 11
 
     def handle_left_run(self):
         self.x -= 10
@@ -57,9 +59,9 @@ class Player:
 
 
     def handle_right_run(self):
-        #self.x += 10
-        #self. run_frames += 1
-        #self.state_update()
+        self.x += 10
+        self. run_frames += 1
+        self.state_update()
         pass
 
     def handle_up_run(self):
@@ -83,17 +85,32 @@ class Player:
         self.state_update()
 
     def handle_normal(self):
+        global gravity
+        self.run_frames += 1
+        if gravity == True:
+            self.y -= 10
+            self.x += 1
+            if self.y <=500:
+                gravity = False
+        elif space == True:
+            self.x += 0.1
+            self.y -= 10 * math.sin(self.x)
+            self.state_update()
+        elif 500 <= self.y:
+            self.y += 10 * math.sin(self.x)
+            if 500<= self.y:
+                gravity = True
+
+        pass # self.run_frame += 1
+
+    def Drop(self):
+        self.y -= 10 * math.sin(self.x)
+
+    def handle_surf(self):
         self.run_frames += 1
         self.x += 0.1
         self.y -= 10 * math.sin(self.x)
         self.state_update()
-
-        pass # self.run_frame += 1
-
-    def handle_surf(self):
-        self.x += 5
-        self.run_frames += 1
-        #self.state_update()
 
 
     def handle_jump(self):
@@ -121,8 +138,7 @@ class Player:
         self.frame = (self.frame + 1) % 8
         self.state_update()
         self.handle_state[self.state](self)
-        if(break_check == True):
-            self.state = SURF
+
 
        # if(space == True)
 
@@ -148,16 +164,15 @@ class Player:
 
     def state_update(self):
         global KeyDown
-        global space
+
 
 
        # if space == True:
         #    self.state = SURF
          #   return
+
         if KeyDown == LEFT:
             self.state = LEFT
-        elif KeyDown == JUMP:
-            self.state = JUMP
         elif KeyDown == RIGHT:
             self.state = RIGHT
         elif KeyDown == UP:
@@ -196,6 +211,12 @@ class  Fruits:
             Fruits.image = load_image('pear.png')
     def update(self):
         self.x -= 5
+        if break_status1 == True:
+            pass # self.x,self.y = break_check1(Player, Fruits)
+
+    def Move(self):
+        self.x += 10
+
     def draw(self):
        global break_status1
 
@@ -358,20 +379,20 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             running = False
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+        if event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
+        if event.type == SDL_KEYDOWN and event.key == SDLK_SPACE:
             menu = False
             space = True
-        elif event.type == SDL_KEYUP and event.key == SDLK_SPACE:
+        if event.type == SDL_KEYUP and event.key == SDLK_SPACE:
             space = False
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_RIGHT:
+        if event.type == SDL_KEYDOWN and event.key == SDLK_RIGHT:
             KeyDown = RIGHT
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_LEFT:
+        if event.type == SDL_KEYDOWN and event.key == SDLK_LEFT:
             KeyDown = LEFT
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_UP:
+        if event.type == SDL_KEYDOWN and event.key == SDLK_UP:
             KeyDown = UP
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_DOWN:
+        if event.type == SDL_KEYDOWN and event.key == SDLK_DOWN:
             KeyDown = DOWN
 
 
@@ -382,12 +403,20 @@ def break_check(player,ball ):
     if player.x >= ball.x -50 and player.x <= ball.x +50 and player.y >= ball.y -50 and player.y <= ball.y +50 :
         break_status = True
 
-def break_check1(player,fruit ):
+def break_check1(Player,Fruits ):
     global running
     global break_status1
-    if player.x >= fruit.x -50 and player.x <= fruit.x +50 and player.y >= fruit.y -50 and player.y <= fruit.y +50:
+    turn = 0
+    if Player.x >= Fruits.x -50 and Player.x <= Fruits.x +50 and Player.y >= Fruits.y -50 and Player.y <= Fruits.y +50:
         break_status1 = True
+        Fruits.x  = Player.x
+        Fruits.y  = Player.y;
+        Fruits.Move()
 
+#def follow_check(plaver,fruit):
+#    global break_status1
+#    if break_status1 == True:
+#        fruit.x =
 
 def main():
 
@@ -418,7 +447,7 @@ def main():
 
     global menu
     global running
-   # global space
+    global space
     menu = True
 
     while menu:

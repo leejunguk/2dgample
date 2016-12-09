@@ -6,7 +6,7 @@ CSonic::CSonic(void)
 	m_y = 0;
 	m_z = 0;
 	m_Speed = 0;
-
+	
 }
 CSonic::~CSonic(void)
 {
@@ -30,7 +30,7 @@ CSonic* CSonic::Create(void)
 {
 	CSonic*	pInstance = new CSonic;
 
-	glPushMatrix();
+	
 	return pInstance;
 }
 
@@ -41,47 +41,108 @@ void CSonic::Release(void)
 }
 void CSonic::Draw(void)
 {
+
+	//ÀüÃ¼ ¶Ü¹ÚÁú Ç¥Çö
+	glPushMatrix();
+	static int RUNFRAME = 0;
+	static int RUNCNT = 0;
+	RUNFRAME++;
+	if (4 <= RUNFRAME)
+	{
+		RUNCNT++;
+		RUNFRAME = 0;
+	}
+	if(RUNCNT % 2 == 1)
+		glTranslatef(0,10,0);
+	if (RUNCNT % 2 == 0)
+		glTranslatef(0, -10, 0);
+
 	//¸Ó¸®
 	glPushMatrix();
-	glColor3f(0, 0, 0.8);
-	glutSolidSphere(30,30,30);
+		glColor3f(0, 0, 0.8);
+		glutSolidSphere(30,30,30);
 
-	glColor3f(0, 0, 0); //¿ÍÀÌ¾î 
-	glutWireSphere(30, 15, 15);
+		glColor3f(0, 0, 0); //¿ÍÀÌ¾î 
+		glutWireSphere(30, 15, 15);
+	glPopMatrix();
 
 	//¸öÅë
-	glTranslatef(0,-65,0);
-	glColor3f(0, 0.1, 0.7);
-	glutSolidSphere(35, 30, 30);
-	glColor3f(0, 0,0);
-	glutWireSphere(35, 30, 30);
-	
-	//ÆÈ ¿ÞÂÊ
-	static float MoveArm = 75.0f;
-	//MoveArm += 3.0f;
-	glRotatef(MoveArm, 1, 0, 0);
-	glTranslatef(35, 0, 20);
-	
-	glColor3f(1, 1, 1);
-	glScalef(1,1,6);
-	glutSolidCube(10);
-	glColor3f(0, 0, 0);
-	glutWireCube(10);
-
-	
-
-	glPopMatrix(); //¸Ó¸® ¿øÁ¡
 	
 	glPushMatrix();
-	static float MoveRightArm = 75.0f;
-		//MoveRightArm -= 3.0f;
-		glTranslatef(0, -75, 0);
+		glTranslatef(0, -65, 0);
+		glColor3f(0, 0.1, 0.7);
+		glutSolidSphere(35, 30, 30);
+		glColor3f(0, 0,0);
+		glutWireSphere(35, 30, 30);
+	glPopMatrix();
+	
+	//ÆÈ ¿ÞÂÊ
+	 
+	glPushMatrix();
+		glTranslatef(0, -65, 0);
+		
+		static float MoveArm = 60.0f;
+		static bool isSwinglast = false;
+		if (90 <= MoveArm)
+		{
+			isSwinglast = false;
+		}
+		if (30 >= MoveArm)
+		{
+			isSwinglast = true;
+		}
+		if (isSwinglast == true)
+		{
+			MoveArm += 10.0f;
+		}
+		if (isSwinglast == false)
+		{
+			MoveArm -= 10.0f;
+		}
+		
+		glRotatef(MoveArm, 1, 0, 0);
 		glTranslatef(35, 0, 20);
-		//ÆÈ¿À¸¥ÂÊ
-		glTranslatef(-70, 0, 0);
-		glRotatef(MoveRightArm,1,0,0);
+		glColor3f(0, 0, 0);
+		glScalef(1,1,6);
+		glutSolidCube(10);
+		glColor3f(0, 0, 0);
+		glutWireCube(10);
+	glPopMatrix();
+
+	
+
+	//¿À¸¥ÆÈ
+	glPushMatrix();
+	
+		
+		glTranslatef(0, -65, 0); //¸öÅë±îÁö trans
+		
+
+		static float MoveArm1 = 60.0f;
+		static bool isSwinglast1 = false;
+		if (90 <= MoveArm1)
+		{
+			isSwinglast1 = true;
+		}
+		if (30 >= MoveArm1)
+		{
+			isSwinglast1 = false;
+		}
+		if (isSwinglast1 == true)
+		{
+			MoveArm1 -= 10.0f;
+		}
+		if (isSwinglast1 == false)
+		{
+			MoveArm1 += 10.0f;
+		}
+		
+		
+		glRotatef(MoveArm1,1,0,0);
+		glTranslatef(-35, 0, 20); //¿À¸¥ÂÊ
+		
 		glScalef(1, 1, 6);
-		glColor3f(1, 1, 1);
+		glColor3f(0, 0, 0);
 		//glScalef(1, 1, 6);
 		glutSolidCube(10);
 		glColor3f(0, 0, 0);
@@ -89,11 +150,36 @@ void CSonic::Draw(void)
 
 	glPopMatrix();
 	
+
+	//¿ÞÂÊ´Ù¸®
 	glPushMatrix();
+	static float Moveleg = 0.0f;
+	static bool isSwinglastleg = false;
+	if (30 <= Moveleg)
+	{
+		isSwinglastleg = true;
+	}
+	if (-30 >= Moveleg)
+	{
+		isSwinglastleg = false;
+	}
+	if (isSwinglastleg == true)
+	{
+		Moveleg -= 15.0f;
+	}
+	if (isSwinglastleg == false)
+	{
+		Moveleg += 15.0f;
+	}
+	
 	
 	glTranslatef(0, -65, 0); //¸öÅë Áß½É 
+	glRotatef(Moveleg, 1, 0, 0);
 	glTranslatef(0, -30, 0);
+	
+	
 	glTranslatef(15, 0, 0); //¿ÞÂÊ
+	
 	glRotatef(90, 1, 0, 0);
 	glColor3f(0, 0, 0);
 	glScalef(1, 1, 10);
@@ -112,6 +198,7 @@ void CSonic::Draw(void)
 	glPushMatrix();
 
 	glTranslatef(0, -65, 0); //¸öÅë Áß½É 
+	glRotatef(-Moveleg, 1, 0, 0);
 	glTranslatef(0, -30, 0);
 	glTranslatef(-15, 0, 0); //¿ÞÂÊ
 	glRotatef(90, 1, 0, 0);
@@ -323,11 +410,13 @@ void CSonic::Draw(void)
 	glutWireCone(10, 15, 15, 5);
 	glPopMatrix();
 
-	glPopMatrix();
+	
 
 
 	//¶ó½ºÆ® pop
+	
 	glPopMatrix();
 
+	//ÀüÃ¼ ¶Ü¹ÚÁú Ç¥Çö
 	glPopMatrix();
 }

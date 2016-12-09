@@ -1,5 +1,6 @@
 #include "Defines.h"
 #include "Sonic.h"
+#include "Object.h"
 int KEY = 0;
 int FlagX = 0;
 int FlagY = 0;
@@ -42,6 +43,9 @@ Ball* ball = new Ball;
 Ball* Crane = new Ball;
 
 CSonic* Sonic = NULL;
+CObject* Ring;
+
+
 
 
 GLfloat ctrlpoints[3][3][3] = {};
@@ -224,14 +228,29 @@ void DrawScene()
 		glPopMatrix();
 
 		Sonic = Sonic->Create();
+		Ring = Ring->Create();
+
+		Ring->SetSpeed(5);
 		Sonic->SetSpeed(5);
 		
 		static float speed = 0.0f;
 		speed += 1;
 
-		Sonic->ZMove(speed);
-		Sonic->Draw();
+		glPushMatrix();
+
+		//Sonic->ZMove(speed);
 		
+		Sonic->Draw();
+
+		glPopMatrix();
+		
+		glPushMatrix();
+		Ring->ZMove(speed);
+		Ring->Draw();
+		glPopMatrix();
+
+
+
 		if (KEY == KeyX)
 		{
 
@@ -328,7 +347,7 @@ void Keyboard(unsigned char key, int x, int y)
 	if (key == '1')
 	{
 		KEY = KeyX;
-		view++;
+		view--;
 	}
 	if (key == '2')
 	{

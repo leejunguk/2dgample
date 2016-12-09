@@ -15,7 +15,7 @@ private:
 	float m_y;
 	float m_z;
 	float m_Speed;
-
+	
 	
 public:
 	CSonic* CSonic::Create(void);

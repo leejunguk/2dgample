@@ -1,0 +1,308 @@
+#include <GL/glut.h>    //includes gl.h glu.h 
+#include <time.h>
+#include <Windows.h>
+#include <math.h>
+#include <stdlib.h>
+
+
+#define TIME 100
+const int SIZEX = 800;
+const int SIZEY = 600;
+const int Normal = 0;
+const int X = 1;
+const int Y = 2;
+const int Z = 3;
+const int S = 4;
+const int LEFT = 11;
+const int RIGHT = 22;
+const int RESET = 99;
+const int ANIMATION = 100;
+const int QUIT = 300;
+const int MOVE = 10;
+const int ROTATE = 55;
+const int TRIANGLE = 3;
+const int RECTANGLE = 4;
+static bool isRECTANGLE = false;
+int STATE = 0;
+
+GLvoid drawScene(GLvoid);
+GLvoid Reshape(int w, int h);
+GLvoid Mouse(int button, int state, int x, int y);
+GLvoid TimerFunction(int value);
+GLvoid Keyboard(unsigned char key, int x, int y);
+GLvoid SpecialKeyboard(int key, int x, int y);
+void display(void);
+
+
+///////전역변수
+void main(int argc, char *argv[])
+{
+
+	//초기화 함수들
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+	// 디스플레이 모드 설정 
+	glutInitWindowPosition(100, 100);
+	// 윈도우의 위치지정 
+	glutInitWindowSize(SIZEX, SIZEY);    //윈도우의 크기 지정
+	glutCreateWindow("Example11");
+	// 윈도우 생성 (윈도우 이름)  
+	glutDisplayFunc(drawScene);    // 출력 함수의 지정
+	glutReshapeFunc(Reshape);
+	glutKeyboardFunc(Keyboard);
+	glutSpecialFunc(SpecialKeyboard);
+	glutMouseFunc(Mouse);
+	glutTimerFunc(TIME, TimerFunction, 1);
+	glutMainLoop();
+
+}
+// 윈도우 출력 함수 
+GLvoid drawScene(GLvoid) {
+
+	//glClear(GL_COLOR_BUFFER_BIT);
+	//glMatrixMode(GL_MODELVIEW);
+	glClear(GL_COLOR_BUFFER_BIT);	glMatrixMode(GL_MODELVIEW);
+
+	static float d = 1;
+	float radius = 70.0f;
+	float c = 1;
+	//								// 예제 코드
+	//glColor3f(1.0, 0.0, 0.0); // 빨강색
+	//glutSolidCube(100);
+	//glPushMatrix();
+	//	glRotatef(30.0, 0.0, 0.0, 1.0);
+	//	glTranslatef(0.5, 0,0, 0.0);
+	//	glColor3f(0.0, 1.0, 0.0); // 초록색
+	//	glutSolidCube(100);
+	//									
+	//	glPushMatrix();
+	//		glRotatef(45.0, 0.0, 0.0, 1.0);
+	//		glTranslatef(0.3, 0.0, 0.0);
+	//		glColor3f(1.0, 0.0, 1.0); // 보라색
+	//		glutSolidCube(100);
+	//	glPopMatrix();
+
+	//glPopMatrix();
+	static float a = 45.0f;
+
+	glColor3f(0.0, 1.0, 0.0);	glBegin(GL_LINES);
+	glVertex3f(0, 300, 0);
+	glVertex3f(0, -300, 0);
+	glVertex3f(-400, 0, 0);
+	glVertex3f(400, 0, 0);
+	glEnd();	glColor3f(0.0, 1.0, 0.0);	glBegin(GL_LINES);
+	glVertex3f(0, 300, 0);
+	glVertex3f(0, -300, 0);
+	glVertex3f(-400, 0, 0);
+	glVertex3f(400, 0, 0);
+	glEnd();	glPushMatrix();	switch (ROTATE)	{	case X: {		glRotatef(a, 1, 0, 0);		break;	}	case Y: {		glRotatef(a, 0, 1, 0);		break;	}	case Z: {		glRotatef(a, 0, 0, 1);		break;	}	case LEFT: {	static int moveX = 0;		glTranslatef(moveX--, 0, 0);		break;	}	case RIGHT: {	static int moveX = 0;		glTranslatef(moveX++, 0, 0);		break;	}	case RESET: {	glPopMatrix();		break;	}	}	a += 5;	if (STATE == ROTATE)	{
+		glPushMatrix();
+		glColor3f(1.0, 1.0, 0.0);
+		glBegin(GL_LINE_STRIP);
+		for (float fAngle = 0.f; fAngle < 360.f; fAngle += 1.0f)
+		{
+			glVertex3f(cos(fAngle)*radius, sin(fAngle)*radius, 0);
+		}
+		glEnd();
+		glPopMatrix();
+
+		glPushMatrix();
+		static float x = 45.0f;
+		static bool isminus1 = false;
+		static float scale1x = 1.0f;
+		static float scale1y = 1.0f;
+		static float scale1z = 1.0f;
+		if (2.5f <= scale1x)
+		{
+			isminus1 = true;
+		}
+		if (0.5f >= scale1x)
+		{
+			isminus1 = false;
+		}
+		if (isminus1 == true)
+		{
+			scale1x -= 0.25f;
+			scale1y -= 0.25f;
+			scale1z -= 0.25f;
+		}
+		if (isminus1 == false)
+		{
+			scale1x += 0.25f;
+			scale1y += 0.25f;
+			scale1z += 0.25f;
+		}
+
+		x += 8;
+		glRotatef(x, 0, 0, 1);
+		float fAngle = 0.f;
+		fAngle += 1.0f;
+		
+
+		
+		glTranslatef(cos(fAngle)*radius, sin(fAngle)*radius, 0);
+
+
+		glScalef(scale1x, scale1y, scale1z);
+		glColor3f(1.0, 1.0, 1.0);
+		if (isRECTANGLE == true)
+		{
+			glutSolidCube(30);
+		}
+		else
+		{
+			glutSolidCone(15, 15, 3, 3);
+		}
+		glPopMatrix();
+	}
+
+	if (STATE == MOVE)
+	{
+		glPushMatrix();
+		glColor3f(1.0, 1.0, 0.0);
+		glBegin(GL_LINE_STRIP);
+		for (float fAngle = 0.f; fAngle < 360.f; fAngle += 1.0f)
+		{
+			glVertex3f(cos(fAngle)*radius, sin(fAngle)*radius, 0);
+		}
+		glEnd();
+		glPopMatrix();
+
+		glPushMatrix();
+		static float x = 45.0f;
+		static bool isminus = false;
+		static float scalex = 1.0f;
+		static float scaley = 1.0f;
+		static float scalez = 1.0f;
+		if (2.5f <= scalex)
+		{
+			isminus = true;
+		}
+		if (0.5f >= scalex)
+		{
+			isminus = false;
+		}
+		if (isminus == true)
+		{
+			scalex -= 0.25f;
+			scaley -= 0.25f;
+			scalez -= 0.25f;
+		}
+		if (isminus == false)
+		{
+			scalex += 0.25f;
+			scaley += 0.25f;
+			scalez += 0.25f;
+		}
+
+
+		x += 8;
+		static float fAngle = 0.f;
+		glTranslatef(cos(fAngle)*radius, sin(fAngle)*radius, 0);
+		glScalef(scalex, scaley, scalez);
+		//glRotatef(x, 0, 0, 1);
+		fAngle += 0.1f;
+		glColor3f(1.0, 1.0, 1.0);
+		if (isRECTANGLE == true)
+		{
+			glutSolidCube(30);
+		}
+		else
+		{
+			glutSolidCone(15, 15, 3, 3);
+		}
+		glPopMatrix();
+	}
+	glutSwapBuffers();
+
+
+
+
+}
+
+GLvoid Mouse(int button, int state, int x, int y) {
+
+
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+
+
+
+	}
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+
+
+
+	}
+
+}
+GLvoid Keyboard(unsigned char key, int x, int y)
+{
+	if (key == 'r' || key == 'R')
+		STATE = ROTATE;
+	if (key == 'm' || key == 'M')
+		STATE = MOVE;
+	if (key == '3' || key == 't' || key == 'T')
+		isRECTANGLE = false;
+	if (key == '4' || key == 'b'|| key == 'B')
+		isRECTANGLE = true;
+	if (key == 'i' || key == 'I')
+		STATE = RESET;
+	if (key == 'a' || key == 'A')
+		STATE = ANIMATION;
+	if (key == 'q' || key == 'Q')
+	{
+		STATE = QUIT;
+		exit(1);
+	}
+}
+GLvoid SpecialKeyboard(int key, int x, int y)
+{
+	if (key == GLUT_KEY_LEFT)
+	{
+		STATE = LEFT;
+	}
+	if (key == GLUT_KEY_RIGHT)
+	{
+		STATE = RIGHT;
+	}
+}
+
+GLvoid TimerFunction(int value) {
+	glutPostRedisplay();
+
+	//a++;
+	glutTimerFunc(TIME, TimerFunction, 1);
+
+}
+
+GLvoid Reshape(int w, int h) {
+
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0, w, 0.0, h, -400.0, 400.0);
+	glMatrixMode(GL_MODELVIEW);
+	glTranslatef(400, 300, 0);
+}
+
+void display(void)
+
+{
+	int temp;
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+	glPushMatrix();
+	glBegin(GL_POINT);
+
+	for (temp = 0; temp < 360; temp++)
+	{
+
+		glVertex3f(0.01*temp - 2, sin(3.1415927 / 180 * temp), 0);
+
+	}
+	glEnd();
+	glPopMatrix();
+	//glutSwapBuffers();
+}
+
+
+

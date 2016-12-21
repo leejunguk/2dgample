@@ -18,8 +18,11 @@ space = None
 menu = None
 running = None
 break_check = None
+number_life = None
 gravity = None
 isFinish = None
+TotalScore = 0
+isGameFinish = None
 
 # state
 SURF =22
@@ -78,6 +81,7 @@ class Player:
     def handle_normal(self):
         global gravity
         global isFinish
+        global isGameFinish
         self.y -= 4
 
         self.run_frames += 1
@@ -172,7 +176,10 @@ class Player:
 
     def state_update(self):
         global KeyDown
+        global isGameFinish
 
+        if self.y <= 120:
+            isGameFinish = False
 
 
        # if space == True:
@@ -349,7 +356,7 @@ class CMenu:
         self.x,self.y = 400,300
 
         if CMenu.image == None:
-            CMenu.image = load_image('juicyWave1 copy.png')
+            CMenu.image = load_image('juicyWave1_START.png')
 
     def update(self):
         pass
@@ -363,6 +370,32 @@ class CMenu:
 
         if selectMenu == True:
             menu = True
+
+
+class CGameOverStage:
+    image = None
+
+
+
+    def __init__(self):
+        self.x,self.y = 400,300
+
+        if CGameOverStage.image == None:
+            CGameOverStage.image = load_image('juicyWave1 GameOver.png')
+
+    def update(self):
+        pass
+
+    def draw(self):
+       self.image.draw(self.x, self.y,800,600)
+
+    def menuset(self):
+        global menu
+        #global selectMenu
+
+        #if selectMenu == True:
+         #   menu = True
+
 
 class KPU:
 
@@ -414,12 +447,17 @@ def break_check(player,ball ):
 def break_check1(Player,Fruits ):
     global running
     global break_status1
+    global TotalScore
+
     turn = 0
+
+
     if Player.x >= Fruits.x -50 and Player.x <= Fruits.x +50 and Player.y >= Fruits.y -50 and Player.y <= Fruits.y +50:
         break_status1 = True
         Fruits.x  = Player.x
-        Fruits.y  = Player.y;
+        Fruits.y  = Player.y
         Fruits.Move()
+        TotalScore += 10
 
 #def follow_check(plaver,fruit):
 #    global break_status1
@@ -430,6 +468,7 @@ def main():
 
     open_canvas()
 
+    font = load_font('ENCR10B.TTF', 40)
 
     mainMenu = CMenu()
     player = Player()
@@ -446,6 +485,7 @@ def main():
     bucket = Bucket()
     pear = Fruits()
     kpu = KPU()
+    gameover = CGameOverStage()
     direction = Direction()
 
     clear_canvas()
@@ -456,6 +496,7 @@ def main():
     global menu
     global running
     global space
+    global TotalScore
     menu = True
 
     while menu:
@@ -495,6 +536,9 @@ def main():
         background2.draw()
         background3.draw()
 
+        font.draw(160,580, "%r" % (TotalScore,),(255,255,0))
+        # "%r: integer expected" % (arg,)
+        font.draw(20, 580, 'Score:', (255, 255, 255))
 
         tree.draw()
         player.draw()
@@ -505,6 +549,13 @@ def main():
         bucket.draw()
         direction.draw()
         pear.draw()
+
+        if isGameFinish == False:
+            clear_canvas()
+            gameover.draw()
+            update_canvas()
+            delay(2.0)
+            break
 
         update_canvas()
 
